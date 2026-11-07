@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "item_highlighter",
+  "version": "${version}",
+  "name": "Item Highlighter",
+  "description": "Highlights newly picked up items in your inventory with an orange slot overlay and border.",
+  "authors": [
+    "User"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/item-highlighter"
+  },
+  "license": "MIT",
+  "icon": "assets/item_highlighter/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.highlighter.ItemHighlighterMod"
+    ],
+    "client": [
+      "com.highlighter.client.ItemHighlighterClient"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "item_highlighter.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "minecraft": ">=1.21 <=1.21.4",
+    "java": ">=21"
+  }
+}
