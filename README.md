@@ -72,8 +72,9 @@ The mod generates a simple configuration file at `.minecraft/config/item-highlig
 
 | Minecraft Version | Fabric | Quilt | NeoForge | Forge |
 |:---:|:---:|:---:|:---:|:---:|
-| **1.21.x** (1.21 - 1.21.4) |  |  |  | — |
-| **1.20.1** (1.20 - 1.20.6) |  |  |  |  |
+| **26.x** (26.1 - 26.3) | Yes | Yes | Yes | — |
+| **1.21.x** (1.21 - 1.21.11) | Yes | Yes | Yes | — |
+| **1.20.1** (1.20 - 1.20.6) | Yes | Yes | Yes | Yes |
 
 ---
 
