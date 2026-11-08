@@ -1,5 +1,6 @@
 package com.highlighter;
 
+import com.highlighter.config.ModConfig;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ public class ItemHighlighterMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("[Item Highlighter] Initialized. Environment: Universal (Client/Server compatible).");
+        ModConfig.load();
+        LOGGER.info("[Item Highlighter] Initialized for Minecraft 26.3!");
     }
 }

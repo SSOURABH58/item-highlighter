@@ -3,11 +3,11 @@
   "minVersion": "0.8",
   "package": "com.highlighter.client.mixin",
   "compatibilityLevel": "JAVA_21",
+  "mixins": [],
   "client": [
     "AbstractContainerMenuMixin",
     "AbstractContainerScreenMixin",
-    "ClientPacketListenerMixin",
-    "GuiMixin"
+    "ClientPacketListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

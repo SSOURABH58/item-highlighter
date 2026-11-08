@@ -2,7 +2,7 @@ package com.highlighter.client.mixin;
 
 import com.highlighter.client.ItemHighlighterClient;
 import com.highlighter.config.ModConfig;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -23,18 +23,18 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     }
 
     /**
-     * Injected at HEAD so the 3D illuminated shelf texture renders ON TOP of the GUI slot background,
-     * but strictly BEHIND the item (which renders at z=100 later in renderSlot).
+     * Injected at HEAD of extractSlot so the 3D illuminated shelf renders ON TOP of the slot background,
+     * but strictly BEHIND the item sprite and stack count.
      */
-    @Inject(method = "renderSlot", at = @At("HEAD"))
-    private void onRenderSlot(GuiGraphics graphics, Slot slot, CallbackInfo ci) {
+    @Inject(method = "extractSlot", at = @At("HEAD"))
+    private void onExtractSlot(GuiGraphicsExtractor extractor, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
         if (slot != null && slot.container instanceof Inventory) {
-            ItemHighlighterClient.renderSlotHighlight(graphics, slot);
+            ItemHighlighterClient.renderSlotHighlight(extractor, slot);
         }
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void onRender(GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("HEAD"))
+    private void onExtractRenderState(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (this.hoveredSlot != null && this.hoveredSlot.container instanceof Inventory) {
             ItemHighlighterClient.onSlotHovered(this.hoveredSlot);
         }

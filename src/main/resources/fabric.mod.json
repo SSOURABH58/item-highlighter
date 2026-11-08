@@ -1,14 +1,16 @@
 {
   "schemaVersion": 1,
   "id": "item_highlighter",
-  "version": "${version}",
+  "version": "1.0.0+26.3",
   "name": "Item Highlighter",
-  "description": "Highlights newly picked up items in your inventory with an orange slot overlay and border.",
+  "description": "Highlights newly collected items in your inventory with an illuminated 3D recessed slot shelf.",
   "authors": [
-    "User"
+    "ssourabh025"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/item-highlighter"
+    "homepage": "https://modrinth.com/mod/item-slot-highlighter",
+    "sources": "https://github.com/SSOURABH58/item-highlighter",
+    "issues": "https://github.com/SSOURABH58/item-highlighter/issues"
   },
   "license": "MIT",
   "icon": "assets/item_highlighter/icon.png",
@@ -28,8 +30,8 @@
     }
   ],
   "depends": {
-    "fabricloader": ">=0.15.0",
-    "minecraft": ">=1.21 <=1.21.4",
-    "java": ">=21"
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=26.1 <=26.3",
+    "java": ">=25"
   }
 }

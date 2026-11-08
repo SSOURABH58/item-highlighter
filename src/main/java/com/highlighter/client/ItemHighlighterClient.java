@@ -5,12 +5,11 @@ import com.highlighter.config.ModConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +25,7 @@ public class ItemHighlighterClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ModConfig.load();
-        ItemHighlighterMod.LOGGER.info("[Item Highlighter] Client initialized successfully with cute pastel 3D shelf renderer.");
+        ItemHighlighterMod.LOGGER.info("[Item Highlighter] Client initialized for Minecraft 26.3 with RenderPearl pedestal shelf.");
     }
 
     public static void markSlot(int slotIndex) {
@@ -47,15 +46,6 @@ public class ItemHighlighterClient implements ClientModInitializer {
         return MARKED_SLOTS.contains(slotIndex);
     }
 
-    /**
-     * Resolves the RGB color for the item based on config mode:
-     * - "DEFAULT" / "SINGLE_COLOR" : Consistent warm buttercup yellow for all items.
-     * - "RARITY"                   : Colors by item rarity (Yellow, Mint, Cyan, Lavender).
-     * - "AUTO_MOD"                 : Auto-derives unique pastel colors per mod namespace.
-     * - "MOD"                      : Explicit mod ID color mapping.
-     * - "ITEM"                     : Direct item ID override.
-     * - "ITEM_NAME"                : Custom name color.
-     */
     public static int resolveColor(ItemStack stack) {
         if (stack == null || stack.isEmpty()) {
             return ModConfig.get().getDefaultColorRgb();
@@ -64,26 +54,22 @@ public class ItemHighlighterClient implements ClientModInitializer {
         ModConfig config = ModConfig.get();
         String mode = config.colorMode != null ? config.colorMode.toUpperCase() : "DEFAULT";
 
-        // 1. Single Color Mode (Default): All items use the exact same clean, warm buttercup yellow
         if ("DEFAULT".equals(mode) || "SINGLE_COLOR".equals(mode)) {
             return config.getDefaultColorRgb();
         }
 
-        ResourceLocation itemLoc = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier itemLoc = BuiltInRegistries.ITEM.getKey(stack.getItem());
         String itemId = itemLoc.toString();
         String namespace = itemLoc.getNamespace();
 
-        // 2. Direct item ID mapping override (e.g. "minecraft:diamond": "#67E8F9")
         if (config.itemColors != null && config.itemColors.containsKey(itemId)) {
             return config.parseHexColor(config.itemColors.get(itemId), config.getDefaultColorRgb());
         }
 
-        // 3. Explicit mod ID / namespace color mapping (e.g. "create": "#FB923C")
         if (config.modColors != null && config.modColors.containsKey(namespace)) {
             return config.parseHexColor(config.modColors.get(namespace), config.getDefaultColorRgb());
         }
 
-        // 4. Custom item name color (if dyed or enchanted)
         if ("ITEM_NAME".equals(mode)) {
             TextColor nameColor = stack.getHoverName().getStyle().getColor();
             if (nameColor != null) {
@@ -91,7 +77,6 @@ public class ItemHighlighterClient implements ClientModInitializer {
             }
         }
 
-        // 5. Rarity mode
         if ("RARITY".equals(mode)) {
             Rarity rarity = stack.getRarity();
             String rarityKey = rarity.name().toUpperCase();
@@ -100,7 +85,6 @@ public class ItemHighlighterClient implements ClientModInitializer {
             }
         }
 
-        // 6. AUTO_MOD mode: automatically gives each mod its own harmonious pastel color
         if ("AUTO_MOD".equals(mode)) {
             if ("minecraft".equals(namespace)) {
                 Rarity rarity = stack.getRarity();
@@ -115,7 +99,6 @@ public class ItemHighlighterClient implements ClientModInitializer {
             return generatePastelColor(namespace);
         }
 
-        // 7. AUTO_ITEM mode: distinct cute pastel colors per item
         if ("AUTO_ITEM".equals(mode)) {
             return generatePastelColor(itemId);
         }
@@ -123,9 +106,6 @@ public class ItemHighlighterClient implements ClientModInitializer {
         return config.getDefaultColorRgb();
     }
 
-    /**
-     * Mathematically generates a vibrant, cute pastel RGB color from any string seed (mod ID or item ID).
-     */
     public static int generatePastelColor(String seed) {
         int hash = Math.abs(seed.hashCode());
         float hue = (hash % 360) / 360.0f;
@@ -187,7 +167,7 @@ public class ItemHighlighterClient implements ClientModInitializer {
         }
     }
 
-    public static void renderSlotHighlight(GuiGraphics graphics, Slot slot) {
+    public static void renderSlotHighlight(GuiGraphicsExtractor extractor, Slot slot) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.player.isCreative()) {
             return;
@@ -197,47 +177,16 @@ public class ItemHighlighterClient implements ClientModInitializer {
         if (isMarked(containerSlot)) {
             if (slot.hasItem() && !slot.getItem().isEmpty()) {
                 int color = resolveColor(slot.getItem());
-                renderShelf(graphics, slot.x - 1, slot.y - 1, color);
+                renderShelf(extractor, slot.x - 1, slot.y - 1, color);
             } else {
                 clearMark(containerSlot);
             }
         }
     }
 
-    public static void renderHotbarHighlight(GuiGraphics graphics, int slotIndex, int x, int y, ItemStack item) {
-        if (!ModConfig.get().showOnHotbar) {
-            return;
-        }
-
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && mc.player.isCreative()) {
-            return;
-        }
-
-        if (isMarked(slotIndex)) {
-            if (item != null && !item.isEmpty()) {
-                int color = resolveColor(item);
-                renderShelf(graphics, x - 1, y - 1, color);
-            } else {
-                clearMark(slotIndex);
-            }
-        }
-    }
-
-    private static void renderShelf(GuiGraphics graphics, int x, int y, int colorRgb) {
-        ResourceLocation texture = ShelfTextureManager.getOrCreateShelfTexture(colorRgb);
-
-        ModConfig config = ModConfig.get();
-        if (config.pulseEffect) {
-            float pulse = (float) (Math.sin((Util.getMillis() % 2400L) / 2400.0 * 2.0 * Math.PI) * 0.05 + 0.95);
-            graphics.setColor(pulse, pulse, pulse, 1.0f);
-        }
-
-        // Render the 18x18 cute pastel shelf behind the item
-        graphics.blit(texture, x, y, 0.0f, 0.0f, 18, 18, 18, 18);
-
-        if (config.pulseEffect) {
-            graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-        }
+    public static void renderShelf(GuiGraphicsExtractor extractor, int x, int y, int colorRgb) {
+        Identifier texture = ShelfTextureManager.getOrCreateShelfTexture(colorRgb);
+        // Render 18x18 pedestal shelf behind item using RenderPearl pipeline in 26.3
+        extractor.blit(texture, x, y, x + 18, y + 18, 0.0f, 1.0f, 0.0f, 1.0f);
     }
 }
