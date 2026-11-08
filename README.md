@@ -68,11 +68,20 @@ The mod generates a simple configuration file at `.minecraft/config/item-highlig
 
 ---
 
+## Supported Loaders & Versions
+
+| Minecraft Version | Fabric | Quilt | NeoForge | Forge |
+|:---:|:---:|:---:|:---:|:---:|
+| **1.21.x** (1.21 - 1.21.4) |  |  |  | — |
+| **1.20.1** (1.20 - 1.20.6) |  |  |  |  |
+
+---
+
 ## Installation
 
-1. Install **Fabric Loader** (or Quilt) for Minecraft 1.21+.
-2. Download **Fabric API** and drop it into your `mods` folder.
-3. Drop `item-highlighter-1.0.0.jar` into your `mods` folder.
+- **Fabric / Quilt**: Install Fabric/Quilt Loader and Fabric API, then place the Fabric jar into your `.minecraft/mods` folder.
+- **NeoForge**: Install NeoForge and place the NeoForge jar into your `.minecraft/mods` folder.
+- **Forge**: Install Forge and place the Forge jar into your `.minecraft/mods` folder.
 
 This mod is 100% client-side. You can freely connect to vanilla servers, LAN worlds, or modded servers without the server needing the mod.
 
